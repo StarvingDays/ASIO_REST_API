@@ -27,13 +27,17 @@ public:
 		return temp;
 	}
 
-	void push(T msg)
+	void push(T msg, bool is_notifying)
 	{
 		std::scoped_lock lock_q(m_mux_q);
 		m_message_q.push(msg);
 
-		std::unique_lock<std::mutex> lock_conv(m_mux_lock);
-		m_conv.notify_one();
+		if (is_notifying)
+		{
+			std::unique_lock<std::mutex> lock_conv(m_mux_lock);
+			m_conv.notify_one();
+		}
+
 	}
 	bool empty()
 	{
